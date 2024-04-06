@@ -1,0 +1,98 @@
+#include <iostream>
+#include <vector>
+
+//用静态链表表示二叉树
+//输入给出二叉树信息，每行为一个结点的信息，包括结点的值，左孩子的位置，右孩子的位置
+//判断两个二叉树是否同构
+//输出结果为YES或者NO
+//输入示例：8 A 1 2 B 3 4 C 5 - D - - E 6 - G 7 - F - - H - -
+//输入示例：8 G - 4 B 7 6 F - - A 5 1 H - - C 0 - D - - E 2 -
+//输出示例：YES
+
+struct TreeNode
+{
+	char Data;
+	int nLeft;
+	int nRight;
+	TreeNode(char Data, int pLeft, int pRight) : Data(Data), nLeft(pLeft), nRight(pRight) {}
+}; 
+std::vector<TreeNode> T1[10], T2[10];
+
+int BuildTree(std::vector<TreeNode> &Tree)
+{
+	int nSize = -1 ,nRoot = -1;
+	std::cin >> nSize;
+	std::vector<int> array(nSize);
+	for (int i = 0; i < nSize; i++)
+	{
+		array[i] = 0;
+	}
+
+	for (int i = 0; i < nSize; i++)
+	{
+		char Data,cLeft,cRight;
+		int nLeft = -1, nRight = -1;
+		std::cin >> Data >> cLeft >> cRight;
+
+		if (cLeft  != '-')
+		{
+			nLeft = cLeft - '0';
+			array[nLeft] = 1;
+		}
+		if (cRight != '-')
+		{
+			nRight = cRight - '0';
+			array[nRight] = 1;
+		}
+		Tree.push_back(TreeNode(Data, nLeft, nRight));
+	}
+	for (int i = 0; i < nSize; i++)
+	{
+		if (array[i] == 0)
+		{
+			nRoot = i;
+			break;
+		}
+	}
+	return nRoot;
+}
+
+bool Isomorphism(int nRoot1, int nRoot2)
+{
+	if (nRoot1 == -1 && nRoot2 == -1)
+		return true;
+	if((nRoot1 == -1 && nRoot2 != -1)|| (nRoot1 != -1 && nRoot2 == -1))
+		return false;
+	if (T1->at(nRoot1).Data != T2->at(nRoot2).Data)
+		return false;
+	if (T1->at(nRoot1).nLeft == -1 && T2->at(nRoot2).nLeft == -1)
+		return Isomorphism(T1->at(nRoot1).nRight, T2->at(nRoot2).nRight);
+	if (T1->at(nRoot1).nRight == -1 && T2->at(nRoot2).nRight == -1)
+		return Isomorphism(T1->at(nRoot1).nLeft, T2->at(nRoot2).nLeft);
+	if ((T1->at(nRoot1).nLeft != -1 && T2->at(nRoot2).nLeft != -1) &&
+		(T1->at(T1->at(nRoot1).nLeft).Data == T2->at(T2->at(nRoot2).nLeft).Data))
+	{
+		return (Isomorphism(T1->at(nRoot1).nLeft, T2->at(nRoot2).nLeft) &&
+				Isomorphism(T1->at(nRoot1).nRight, T2->at(nRoot2).nRight));
+	}
+	else
+	{
+		return (Isomorphism(T1->at(nRoot1).nLeft, T2->at(nRoot2).nRight) &&
+				Isomorphism(T1->at(nRoot1).nRight, T2->at(nRoot2).nLeft));
+	}
+}
+
+int main(void)
+{
+	int nRoot1 = BuildTree(T1[0]);
+	int nRoot2 = BuildTree(T2[0]);
+	if (Isomorphism(nRoot1, nRoot2))
+	{
+		std::cout << "YES" << std::endl;
+	}
+	else
+	{
+		std::cout << "NO" << std::endl;
+	}
+	return 0;
+}
