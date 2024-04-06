@@ -1,0 +1,91 @@
+struct LinkNode
+{
+	int nData;
+    LinkNode* pNext;
+	LinkNode(int nData) : nData(nData), pNext(nullptr) {}
+};
+
+LinkNode* creatList()
+{
+	int nLength = -1;
+	printf("Please input the length of the list: ");
+	scanf_s("%d", &nLength);
+	if (nLength <= 0)
+		return nullptr;
+
+	int nData = -1;
+	scanf_s("%d", &nData);
+	LinkNode* pHead = new LinkNode(nData);
+	LinkNode* pCurrent = pHead;
+	for (int i = 0; i < nLength - 1; i++)
+	{
+		scanf_s("%d", &nData);
+		LinkNode* pLast = new LinkNode(nData);
+		pCurrent->pNext = pLast;
+		pCurrent = pLast;
+	}
+
+	return pHead;
+}
+
+LinkNode* mergeList(LinkNode* pList1, LinkNode* pList2)
+{
+	if (!pList1 && !pList2)
+		return nullptr;
+
+	if (!pList1)
+		return pList2;
+
+	if (!pList2)
+		return pList1;
+
+	LinkNode* pHead = nullptr;
+	if (pList1->nData < pList2->nData)
+	{
+		pHead = pList1;
+		pList1 = pList1->pNext;
+	}
+	else
+	{
+		pHead = pList2;
+		pList2 = pList2->pNext;
+	}
+
+	LinkNode* pCurrent = pHead;
+	while (pList1 && pList2)
+	{
+		if (pList1->nData < pList2->nData)
+		{
+			pCurrent->pNext = pList1;
+			pList1 = pList1->pNext;
+		}
+		else
+		{
+			pCurrent->pNext = pList2;
+			pList2 = pList2->pNext;
+		}
+		pCurrent = pCurrent->pNext;
+	}
+
+	if (pList1)
+		pCurrent->pNext = pList1;
+	else if(pList2)
+		pCurrent->pNext = pList2;
+
+	return pHead;
+}
+
+int main(void)
+{
+	LinkNode* pList1 = creatList();
+	LinkNode* pList2 = creatList();
+
+	LinkNode* pList = mergeList(pList1, pList2);
+	while (pList)
+	{
+		printf("%d", pList->nData);
+		printf("\n");
+		pList = pList->pNext;
+	}
+	return 0;
+}
