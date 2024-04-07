@@ -1,0 +1,130 @@
+#include <iostream>
+
+struct TreeNode
+{
+	int nData;
+	TreeNode* pLeft;
+	TreeNode* pRight;
+	int nFlag = 0;
+	TreeNode(int nData, TreeNode* pLeft = nullptr, TreeNode* pRight = nullptr) : nData(nData), pLeft(pLeft), pRight(pRight) {}
+}; 
+
+TreeNode* insertTree(int nData ,TreeNode* pTree)
+{
+	if (!pTree)
+	{
+		pTree = new TreeNode(nData);
+	}
+	else if (nData < pTree->nData)
+	{
+		pTree->pLeft = insertTree(nData, pTree->pLeft);
+	}
+	else if (nData > pTree->nData)
+	{
+		pTree->pRight = insertTree(nData, pTree->pRight);
+	}
+	return pTree;
+}
+
+TreeNode* BuildTree(int nSize)
+{
+	int nData;
+	std::cin >> nData;
+	TreeNode* pRoot = new TreeNode(nData);
+	for (int i = 1; i < nSize; i++)
+	{
+		std::cin >> nData;
+		pRoot = insertTree(nData, pRoot);
+	}
+	return pRoot;
+}
+
+bool check(TreeNode* pTree, int nData)
+{
+	if (pTree->nFlag != 0)
+	{
+		if (pTree->nData > nData)
+		{
+			return check(pTree->pLeft,nData);
+		}
+		else
+		{
+			return check(pTree->pRight, nData);
+		}
+	}
+	else
+	{
+		if (pTree->nData == nData)
+		{
+			pTree->nFlag = 1;
+			return true;
+		}
+		else
+			return false;
+	}
+}
+
+bool Isomorphism(TreeNode* pTree, int nSize)
+{
+	bool bResult = true;
+	int nData = -1;
+
+	std::cin >> nData;
+	if (pTree->nData != nData)
+		bResult = false;
+	else
+		pTree->nFlag = 1;
+
+	for (int i = 1; i < nSize; i++)
+	{
+		std::cin >> nData;
+		if (bResult && !check(pTree, nData))
+			bResult = false;
+	}
+	return bResult;
+}
+
+void Reset(TreeNode* pTree)
+{
+	if (pTree)
+	{
+		Reset(pTree->pLeft);
+		Reset(pTree->pRight);
+		pTree->nFlag = 0;
+	}
+}
+
+void DeleteTree(TreeNode* pTree)
+{
+	if (pTree)
+	{
+		DeleteTree(pTree->pLeft);
+		DeleteTree(pTree->pRight);
+		delete pTree;
+	}
+}
+
+int main(void)
+{
+	int nSize ,nNum;
+	std::cin >> nSize;
+
+	while (nSize)
+	{
+		std::cin >> nNum;
+		TreeNode* pTree = BuildTree(nSize);
+		for (int i = 0; i < nNum; i++)
+		{
+			if (Isomorphism(pTree, nSize))
+				std::cout << "YES" << std::endl;
+			else
+				std::cout << "NO" << std::endl;
+
+			Reset(pTree);
+		}
+		DeleteTree(pTree);
+		std::cin >> nSize;
+	}
+
+	return 0;
+}
